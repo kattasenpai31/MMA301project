@@ -5,28 +5,37 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useRouter } from "expo-router";
 
 export default function LoginScreen() {
-  const navigation = useNavigation();
+  const router = useRouter();
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Đăng nhập</Text>
 
-      <TextInput placeholder="Email hoặc Tên đăng nhập" style={styles.input} />
-      <TextInput placeholder="Mật khẩu" secureTextEntry style={styles.input} />
+      <TextInput
+        placeholder="Email hoặc Tên đăng nhập"
+        placeholderTextColor="#aaa"
+        style={styles.input}
+      />
+      <TextInput
+        placeholder="Mật khẩu"
+        placeholderTextColor="#aaa"
+        secureTextEntry
+        style={styles.input}
+      />
 
       <TouchableOpacity style={styles.loginButton}>
         <Text style={styles.loginButtonText}>Đăng nhập</Text>
       </TouchableOpacity>
 
       <View style={styles.linksContainer}>
-        <TouchableOpacity onPress={() => navigation.navigate("Register")}>
+        <TouchableOpacity onPress={() => router.push("/Register")}>
           <Text style={styles.link}>Chưa có tài khoản?</Text>
         </TouchableOpacity>
         <Text style={styles.separator}>|</Text>
-        <TouchableOpacity onPress={() => navigation.navigate("ForgotPassword")}>
+        <TouchableOpacity onPress={() => router.push("/ForgotPassword")}>
           <Text style={styles.link}>Quên mật khẩu?</Text>
         </TouchableOpacity>
       </View>
@@ -35,27 +44,54 @@ export default function LoginScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, justifyContent: "center" },
+  container: {
+    flex: 1,
+    backgroundColor: "#000", // theme đen
+    paddingHorizontal: 24,
+    justifyContent: "center",
+    alignItems: "center",
+  },
   title: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: "bold",
-    marginBottom: 20,
-    textAlign: "center",
+    color: "white",
+    marginBottom: 32,
   },
   input: {
+    width: "100%",
+    backgroundColor: "#1a1a1a",
+    color: "white",
+    borderRadius: 10,
+    padding: 14,
+    marginBottom: 16,
     borderWidth: 1,
-    borderColor: "#ccc",
-    padding: 12,
-    marginBottom: 15,
-    borderRadius: 8,
+    borderColor: "#333",
   },
-  loginButton: { backgroundColor: "#000", padding: 14, borderRadius: 8 },
-  loginButtonText: { color: "#fff", textAlign: "center", fontWeight: "bold" },
+  loginButton: {
+    width: "100%",
+    backgroundColor: "#fff",
+    paddingVertical: 14,
+    borderRadius: 10,
+    marginTop: 8,
+  },
+  loginButtonText: {
+    color: "#000",
+    fontWeight: "bold",
+    fontSize: 16,
+    textAlign: "center",
+  },
   linksContainer: {
     flexDirection: "row",
     justifyContent: "center",
-    marginTop: 16,
+    marginTop: 20,
   },
-  link: { color: "#007bff", marginHorizontal: 4 },
-  separator: { marginHorizontal: 6 },
+  link: {
+    color: "#bbb",
+    fontSize: 14,
+    marginHorizontal: 4,
+  },
+  separator: {
+    color: "#555",
+    marginHorizontal: 8,
+  },
 });
