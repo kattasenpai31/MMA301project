@@ -51,21 +51,6 @@ export default function HomeScreen() {
   const navigation = useNavigation();
   return (
     <ScrollView style={styles.container}>
-      <View style={styles.tabs}>
-        <TouchableOpacity onPress={() => navigation.navigate("Home")}>
-          <Text style={styles.tabActive}>Trang chủ</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate("Category")}>
-          <Text style={styles.tab}>Thể loại</Text>
-        </TouchableOpacity>
-        <TouchableOpacity>
-          <Text style={styles.tab}>Tủ truyện</Text>
-        </TouchableOpacity>
-        <TouchableOpacity>
-          <Text style={styles.tab}>🔍</Text>
-        </TouchableOpacity>
-      </View>
-
       {/* Trending Manga */}
       <FlatList
         horizontal
