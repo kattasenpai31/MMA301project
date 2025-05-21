@@ -2,8 +2,9 @@ import { View, Text } from "react-native";
 import React from "react";
 import { StyleSheet, TouchableOpacity, Image } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-
+import { useRouter } from "expo-router";
 const ProfileScreen = () => {
+  const router = useRouter();
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Tài khoản</Text>
@@ -26,7 +27,10 @@ const ProfileScreen = () => {
       <Text style={styles.description}>Đăng nhập để đồng bộ dữ liệu</Text>
 
       {/* Nút đăng nhập */}
-      <TouchableOpacity style={styles.loginButton}>
+      <TouchableOpacity
+        style={styles.loginButton}
+        onPress={() => router.push("/login")}
+      >
         <Text style={styles.loginButtonText}>Đăng nhập</Text>
       </TouchableOpacity>
     </View>

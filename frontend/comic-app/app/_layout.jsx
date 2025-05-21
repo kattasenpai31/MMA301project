@@ -12,8 +12,16 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <Stack>
-        {/* Bottom Tabs */}
-        <Stack.Screen name="(BotTabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="(BotTabs)" options={{ headerShown: true }} />
+        <Stack.Screen
+          name="login"
+          options={{ title: "Đăng nhập", headerShown: true }}
+        />
+        <Stack.Screen name="register" options={{ title: "Đăng ký" }} />
+        <Stack.Screen
+          name="forgotPassword"
+          options={{ title: "Quên mật khẩu" }}
+        />
       </Stack>
       <StatusBar style="auto" />
     </ThemeProvider>
