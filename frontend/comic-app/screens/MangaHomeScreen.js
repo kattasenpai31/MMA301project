@@ -8,8 +8,11 @@ import {
   TouchableOpacity,
   Image,
 } from "react-native";
+import { TabRouter, useNavigation } from "@react-navigation/native";
+import { Ionicons } from "@expo/vector-icons";
+import { useLayoutEffect } from "react";
+import { useRouter } from "expo-router";
 
-import { useNavigation } from "@react-navigation/native";
 const trendingManga = [
   {
     id: "1",
@@ -48,7 +51,8 @@ const topDay = [
   },
 ];
 export default function HomeScreen() {
-  const navigation = useNavigation();
+  const router = useRouter();
+
   return (
     <ScrollView style={styles.container}>
       {/* Trending Manga */}

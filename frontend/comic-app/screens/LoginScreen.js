@@ -6,6 +6,7 @@ import {
   StyleSheet,
 } from "react-native";
 import { useRouter } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -14,6 +15,7 @@ export default function LoginScreen() {
     <View style={styles.container}>
       <Text style={styles.title}>Đăng nhập</Text>
 
+      <Ionicons name="person-circle-outline" size={40} color="white" />
       <TextInput
         placeholder="Email hoặc Tên đăng nhập"
         placeholderTextColor="#aaa"
@@ -31,11 +33,11 @@ export default function LoginScreen() {
       </TouchableOpacity>
 
       <View style={styles.linksContainer}>
-        <TouchableOpacity onPress={() => router.push("/Register")}>
+        <TouchableOpacity onPress={() => router.push("/register")}>
           <Text style={styles.link}>Chưa có tài khoản?</Text>
         </TouchableOpacity>
         <Text style={styles.separator}>|</Text>
-        <TouchableOpacity onPress={() => router.push("/ForgotPassword")}>
+        <TouchableOpacity onPress={() => router.push("/forgotPassword")}>
           <Text style={styles.link}>Quên mật khẩu?</Text>
         </TouchableOpacity>
       </View>

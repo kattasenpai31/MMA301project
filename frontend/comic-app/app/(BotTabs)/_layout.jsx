@@ -26,7 +26,7 @@ export default function BotTabsLayout() {
         options={{
           tabBarLabel: "Profile",
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person" color={color} size={size} />
+            <Ionicons name="person-circle" color={color} size={size} />
           ),
         }}
       />

@@ -1,9 +1,6 @@
-import { View, Text } from "react-native";
 import React from "react";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { Ionicons } from "@expo/vector-icons";
-import { Tabs } from "expo-router";
-
 import MangaHomeScreen from "@/screens/MangaHomeScreen";
 import Category from "@/screens/CategoryScreen";
 import Search from "@/screens/SearchScreen";
@@ -13,7 +10,16 @@ const index = () => {
     <TopTab.Navigator>
       <TopTab.Screen name="Home" component={MangaHomeScreen} />
       <TopTab.Screen name="Category" component={Category} />
-      <TopTab.Screen name="Search" component={Search} />
+      <TopTab.Screen
+        name="Search"
+        component={Search}
+        options={{
+          tabBarLabel: () => null, // Ẩn chữ "Search"
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="search" size={20} color={color} />
+          ),
+        }}
+      />
     </TopTab.Navigator>
   );
 };
