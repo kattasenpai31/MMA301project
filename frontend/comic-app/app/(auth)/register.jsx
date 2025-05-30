@@ -1,8 +1,11 @@
-import { View, Text } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+} from "react-native";
 import React from "react";
-import { StyleSheet } from "react-native";
-import { TextInput } from "react-native";
-import { TouchableOpacity } from "react-native";
 export default function RegisterScreen() {
   return (
     <View style={styles.container}>
@@ -42,7 +45,7 @@ export default function RegisterScreen() {
         style={styles.input}
       />
       <TouchableOpacity style={styles.registerButton}>
-        <Text style={styles.RegisterButtonText}>ResetPassword</Text>
+        <Text style={styles.RegisterButtonText}>Register</Text>
       </TouchableOpacity>
     </View>
   );

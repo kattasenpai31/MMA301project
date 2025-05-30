@@ -1,7 +1,11 @@
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  TextInput,
+} from "react-native";
 import React from "react";
-import { TextInput } from "react-native-web";
-
 const ForgotPasswordScreen = () => {
   return (
     <View style={styles.container}>

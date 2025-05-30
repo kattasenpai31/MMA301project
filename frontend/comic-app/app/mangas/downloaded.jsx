@@ -1,12 +1,12 @@
 import { View, Text } from "react-native";
 import React from "react";
 
-const DownloadedComic = () => {
+const dowloaded = () => {
   return (
     <View>
-      <Text>DownloadedComic</Text>
+      <Text>dowloaded</Text>
     </View>
   );
 };
 
-export default DownloadedComic;
+export default dowloaded;

@@ -13,9 +13,8 @@ export default function LoginScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Đăng nhập</Text>
-
       <Ionicons name="person-circle-outline" size={40} color="white" />
+      <Text style={styles.title}>Đăng nhập</Text>
       <TextInput
         placeholder="Email hoặc Tên đăng nhập"
         placeholderTextColor="#aaa"
@@ -37,7 +36,7 @@ export default function LoginScreen() {
           <Text style={styles.link}>Chưa có tài khoản?</Text>
         </TouchableOpacity>
         <Text style={styles.separator}>|</Text>
-        <TouchableOpacity onPress={() => router.push("/forgotPassword")}>
+        <TouchableOpacity onPress={() => router.push("/forgot-password")}>
           <Text style={styles.link}>Quên mật khẩu?</Text>
         </TouchableOpacity>
       </View>
