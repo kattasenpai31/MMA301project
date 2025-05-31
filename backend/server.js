@@ -12,8 +12,8 @@ app.use(morgan("dev"));
 connectDB();
 
 // Routes
-const categoryRouter = require("./routes/category.route");
-app.use("/api/category", categoryRouter);
+
+app.use("/api/category", require("./routes/category.route"));
 
 // Khởi chạy server
 const PORT = 9999;

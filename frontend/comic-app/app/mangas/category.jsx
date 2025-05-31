@@ -6,65 +6,43 @@ import {
   StyleSheet,
   TouchableOpacity,
   useColorScheme,
+  ActivityIndicator,
 } from "react-native";
+import axios from "axios";
 
 const CategoryScreen = () => {
-  const [categories, setCategories] = useState([
-    "Shounen Ai",
-    "Cooking",
-    "Cổ Đại",
-    "Drama",
-    "Manhwa",
-    "Ngôn Tình",
-    "Romance",
-    "Truyện Màu",
-    "Action",
-    "Supernatural",
-    "Manga",
-    "Comedy",
-    "Martial Arts",
-    "Horror",
-    "School Life",
-    "Mystery",
-    "Shoujo",
-    "Tragedy",
-    "Tu Tiên",
-    "Hệ Thống",
-    "Võng Du",
-    "Huyền Bí",
-    "Siêu Nhiên",
-    "Linh Dị",
-    "Cổ Trang",
-    "Yaoi",
-    "Trùng Sinh",
-    "Adaptation",
-    "Tiểu Thuyết",
-    "Tình Yêu",
-    "Dị Năng",
-    "Sci-Fi",
-  ]);
-
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
   const colorScheme = useColorScheme();
 
-  // Gọi API categories từ database (backend) ở đây
-  // useEffect(() => {
-  //   const fetchCategories = async () => {
-  //     try {
-  //       const response = await fetch("https://your-backend.com/api/categories");
-  //       const data = await response.json();
-  //       setCategories(data);
-  //     } catch (error) {
-  //       console.error("Failed to fetch categories", error);
-  //     }
-  //   };
-  //   fetchCategories();
-  // }, []);
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get("http://mongodb:27017/api/category");
+        setCategories(response.data.map((item) => item.Categoryname));
+      } catch (error) {
+        console.error("Failed to fetch categories:", error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   const renderItem = ({ item }) => (
     <TouchableOpacity style={styles.itemContainer}>
       <Text style={styles.itemText}>{item}</Text>
     </TouchableOpacity>
   );
+
+  if (loading) {
+    return (
+      <View style={[styles.container, { alignItems: "center" }]}>
+        <ActivityIndicator size="large" color="#000" />
+      </View>
+    );
+  }
 
   return (
     <FlatList
