@@ -8,47 +8,37 @@ import {
   useColorScheme,
   ActivityIndicator,
 } from "react-native";
-import axios from "axios";
 
 const CategoryScreen = () => {
   const [categories, setCategories] = useState([]);
-  const [loading, setLoading] = useState(true);
   const colorScheme = useColorScheme();
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await axios.get("http://mongodb:27017/api/category");
-        setCategories(response.data.map((item) => item.Categoryname));
-      } catch (error) {
-        console.error("Failed to fetch categories:", error.message);
-      } finally {
-        setLoading(false);
-      }
-    };
+  // Gọi API lấy dữ liệu từ NodeJS backend
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch("http://localhost:9999/api/category"); // hoặc IP LAN nếu chạy trên thiết bị thật
+      const data = await response.json();
+      setCategories(data); // data là array of { _id, Categoryname }
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  };
 
+  useEffect(() => {
     fetchCategories();
   }, []);
 
   const renderItem = ({ item }) => (
     <TouchableOpacity style={styles.itemContainer}>
-      <Text style={styles.itemText}>{item}</Text>
+      <Text style={styles.itemText}>{item.Categoryname}</Text>
     </TouchableOpacity>
   );
-
-  if (loading) {
-    return (
-      <View style={[styles.container, { alignItems: "center" }]}>
-        <ActivityIndicator size="large" color="#000" />
-      </View>
-    );
-  }
 
   return (
     <FlatList
       data={categories}
       renderItem={renderItem}
-      keyExtractor={(item, index) => `${item}-${index}`}
+      keyExtractor={(item) => item._id}
       numColumns={2}
       contentContainerStyle={[
         styles.container,
