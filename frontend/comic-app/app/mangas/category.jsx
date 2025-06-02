@@ -16,9 +16,9 @@ const CategoryScreen = () => {
   // Gọi API lấy dữ liệu từ NodeJS backend
   const fetchCategories = async () => {
     try {
-      const response = await fetch("http://localhost:9999/api/category"); // hoặc IP LAN nếu chạy trên thiết bị thật
+      const response = await fetch("http://localhost:9999/api/categories");
       const data = await response.json();
-      setCategories(data); // data là array of { _id, Categoryname }
+      setCategories(data);
     } catch (error) {
       console.error("Error fetching categories:", error);
     }
@@ -30,7 +30,7 @@ const CategoryScreen = () => {
 
   const renderItem = ({ item }) => (
     <TouchableOpacity style={styles.itemContainer}>
-      <Text style={styles.itemText}>{item.Categoryname}</Text>
+      <Text style={styles.itemText}>{item.name}</Text>
     </TouchableOpacity>
   );
 

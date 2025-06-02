@@ -2,27 +2,26 @@ const express = require("express");
 const morgan = require("morgan");
 const connectDB = require("./config/db");
 const categoryRoutes = require("./routes/category.route");
-const app = express();
+const userRoutes = require("./routes/user.route");
+const cors = require("cors");
 
+const app = express();
+app.use(cors());
 // Kết nối database
 connectDB();
 
 // Middleware
-app.use(express.json());
 app.use(morgan("dev"));
+app.use(express.json());
 
 // Routes
 app.get("/", (req, res) => {
   res.send("Manga Reading App API");
 });
 
-// Test route
-app.get("/api/test", (req, res) => {
-  res.json({ message: "API is working!" });
-});
-
 // Đăng ký route categories - PHẢI ĐẶT TRƯỚC middleware 404
 app.use("/api/categories", categoryRoutes);
+app.use("/api/users", userRoutes);
 
 // Xử lý lỗi 404 - PHẢI ĐẶT SAU CÁC ROUTE KHÁC
 app.use((req, res) => {
