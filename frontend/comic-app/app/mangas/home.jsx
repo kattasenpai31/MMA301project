@@ -1,74 +1,85 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
   ScrollView,
   StyleSheet,
-  FlatList,
   TouchableOpacity,
   Image,
+  ActivityIndicator,
   Dimensions,
 } from "react-native";
 import { useRouter } from "expo-router";
-
-// Sample manga data
-const trendingManga = [
-  {
-    id: "1",
-    title: "One Piece",
-    cover: "https://images-na.ssl-images-amazon.com/images/I/91NxYvUNf6L.jpg",
-    views: 50000,
-    genres: ["Adventure", "Action"],
-  },
-  {
-    id: "2",
-    title: "Attack on Titan",
-    cover: "https://m.media-amazon.com/images/I/81qPzeEO5IL.jpg",
-    views: 45000,
-    genres: ["Drama", "Horror"],
-  },
-  {
-    id: "3",
-    title: "Jujutsu Kaisen",
-    cover: "https://cdn.myanimelist.net/images/manga/2/219336.jpg",
-    views: 32000,
-    genres: ["Supernatural", "Action"],
-  },
-  {
-    id: "4",
-    title: "Demon Slayer",
-    cover: "https://cdn.myanimelist.net/images/manga/3/179023.jpg",
-    views: 41000,
-    genres: ["Action", "Historical"],
-  },
-];
 
 const CARD_WIDTH = 140;
 
 export default function MangaHomeScreen() {
   const router = useRouter();
+  const [mangas, setMangas] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchMangas = async () => {
+      try {
+        const res = await fetch("http://localhost:9999/api/mangas");
+        const data = await res.json();
+        setMangas(data);
+      } catch (error) {
+        console.error("Failed to fetch mangas:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMangas();
+  }, []);
+
+  if (loading) {
+    return (
+      <View
+        style={[
+          styles.container,
+          { justifyContent: "center", alignItems: "center" },
+        ]}
+      >
+        <ActivityIndicator size="large" color="#fff" />
+      </View>
+    );
+  }
 
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.sectionTitle}>📚 Tủ sách cập nhật gần đây</Text>
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         <View style={styles.bookShelf}>
-          {trendingManga.map((item) => (
+          {mangas.map((manga) => (
             <TouchableOpacity
-              key={item.id}
+              key={manga.id}
               style={styles.card}
-              onPress={() => router.push(`/MangaDetailScreen?id=${item.id}`)}
+              onPress={() => router.push(`/mangas/${manga.id}`)}
             >
-              <Image source={{ uri: item.cover }} style={styles.coverImage} />
+              <Image
+                source={{ uri: manga.coverImage }}
+                style={styles.coverImage}
+              />
               <View style={styles.infoContainer}>
-                <Text numberOfLines={1} style={styles.title}>
-                  {item.title}
+                <Text style={styles.title} numberOfLines={1}>
+                  {manga.title}
                 </Text>
-                <Text style={styles.views}>
-                  👁 {item.views.toLocaleString()}
+                <Text
+                  style={[
+                    styles.status,
+                    manga.status === "completed"
+                      ? styles.statusCompleted
+                      : styles.statusOngoing,
+                  ]}
+                >
+                  {manga.status === "completed"
+                    ? "Hoàn thành"
+                    : "Đang tiến hành"}
                 </Text>
-                <Text numberOfLines={1} style={styles.genres}>
-                  {item.genres.join(", ")}
+                <Text style={styles.categories} numberOfLines={1}>
+                  {manga.categories.map((cat) => cat.name).join(", ")}
                 </Text>
               </View>
             </TouchableOpacity>
@@ -113,17 +124,26 @@ const styles = StyleSheet.create({
   },
   title: {
     color: "#fff",
-    fontSize: 14,
+    fontSize: 16, // tăng kích thước
     fontWeight: "bold",
   },
-  views: {
-    color: "#aaa",
+
+  status: {
     fontSize: 12,
-    marginTop: 2,
+    marginTop: 4,
   },
-  genres: {
-    color: "#888",
-    fontSize: 11,
+
+  statusOngoing: {
+    color: "#4caf50", // xanh lá
+  },
+
+  statusCompleted: {
+    color: "#f44336", // đỏ
+  },
+
+  categories: {
+    color: "#bbb",
+    fontSize: 12,
     marginTop: 2,
   },
 });

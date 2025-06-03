@@ -3,6 +3,7 @@ const morgan = require("morgan");
 const connectDB = require("./config/db");
 const categoryRoutes = require("./routes/category.route");
 const userRoutes = require("./routes/user.route");
+const mangaRoutes = require("./routes/manga.route");
 const cors = require("cors");
 
 const app = express();
@@ -22,7 +23,7 @@ app.get("/", (req, res) => {
 // Đăng ký route categories - PHẢI ĐẶT TRƯỚC middleware 404
 app.use("/api/categories", categoryRoutes);
 app.use("/api/users", userRoutes);
-
+app.use("/api/mangas", mangaRoutes);
 // Xử lý lỗi 404 - PHẢI ĐẶT SAU CÁC ROUTE KHÁC
 app.use((req, res) => {
   res.status(404).json({ message: "Endpoint not found" });
