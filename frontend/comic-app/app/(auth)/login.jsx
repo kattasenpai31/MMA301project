@@ -4,30 +4,65 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
+  Alert,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-
+import React, { useState } from "react";
+import axios from "axios";
+import { useUser } from "../../context/UserContext";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 export default function LoginScreen() {
   const router = useRouter();
+  const [loginName, setLoginName] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const { fetchUser } = useUser();
+  const handleLogin = async () => {
+    try {
+      const res = await axios.post("http://localhost:9999/api/auth/login", {
+        loginName,
+        password,
+      });
+
+      await AsyncStorage.setItem("token", res.data.token);
+      await AsyncStorage.setItem("user", JSON.stringify(res.data.user));
+
+      await fetchUser();
+
+      Alert.alert("Thành công", "Đăng nhập thành công");
+      console.log("Login successful");
+      console.log("User data:", res.data.user); // Debugging line
+      router.replace("/(tabs)");
+    } catch (error) {
+      setError("Đăng nhập thất bại. Vui lòng kiểm tra thông tin.");
+    }
+  };
 
   return (
     <View style={styles.container}>
       <Ionicons name="person-circle-outline" size={40} color="white" />
       <Text style={styles.title}>Đăng nhập</Text>
+
       <TextInput
-        placeholder="Email hoặc Tên đăng nhập"
+        placeholder="Tên đăng nhập"
         placeholderTextColor="#aaa"
         style={styles.input}
+        value={loginName}
+        onChangeText={setLoginName}
       />
       <TextInput
         placeholder="Mật khẩu"
         placeholderTextColor="#aaa"
         secureTextEntry
         style={styles.input}
+        value={password}
+        onChangeText={setPassword}
       />
 
-      <TouchableOpacity style={styles.loginButton}>
+      {error ? <Text style={styles.error}>{error}</Text> : null}
+
+      <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
         <Text style={styles.loginButtonText}>Đăng nhập</Text>
       </TouchableOpacity>
 
@@ -47,7 +82,7 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#000", // theme đen
+    backgroundColor: "#000",
     paddingHorizontal: 24,
     justifyContent: "center",
     alignItems: "center",
@@ -79,6 +114,11 @@ const styles = StyleSheet.create({
     color: "#000",
     fontWeight: "bold",
     fontSize: 16,
+    textAlign: "center",
+  },
+  error: {
+    color: "red",
+    marginBottom: 10,
     textAlign: "center",
   },
   linksContainer: {

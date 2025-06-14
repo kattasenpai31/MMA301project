@@ -1,9 +1,12 @@
 const express = require("express");
 const morgan = require("morgan");
+require("dotenv").config();
 const connectDB = require("./config/db");
 const categoryRoutes = require("./routes/category.route");
 const userRoutes = require("./routes/user.route");
 const mangaRoutes = require("./routes/manga.route");
+const authRoutes = require("./routes/auth.route");
+
 const cors = require("cors");
 
 const app = express();
@@ -24,6 +27,8 @@ app.get("/", (req, res) => {
 app.use("/api/categories", categoryRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/mangas", mangaRoutes);
+app.use("/api/auth", authRoutes);
+
 // Xử lý lỗi 404 - PHẢI ĐẶT SAU CÁC ROUTE KHÁC
 app.use((req, res) => {
   res.status(404).json({ message: "Endpoint not found" });
@@ -36,11 +41,12 @@ app.use((err, req, res, next) => {
 });
 
 // Khởi chạy server
-const PORT = process.env.PORT || 9999;
+const PORT = process.env.PORT || 8080;
 const HOSTNAME = "localhost";
 
-app.listen(PORT, HOSTNAME, () => {
-  console.log(`Server is running at http://${HOSTNAME}:${PORT}`);
+connectDB().then(() => {
+  app.listen(PORT, HOSTNAME, () => {
+    console.log(`Server is running at http://${HOSTNAME}:${PORT}`);
+  });
 });
-
 module.exports = app;

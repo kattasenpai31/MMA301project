@@ -24,10 +24,27 @@ const getUserById = async (req, res) => {
 
 const createUser = async (req, res) => {
   try {
-    const { name, email, fullName, phoneNumber, avatar } = req.body;
-    const user = new User({ name, email, fullName, phoneNumber, avatar });
+    const { loginName, email, password, fullName, phoneNumber, avatar } =
+      req.body;
+
+    const existingUser = await User.findOne({ loginName });
+    if (existingUser) {
+      return res.status(400).json({ message: "Tên đăng nhập đã tồn tại" });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const user = new User({
+      loginName,
+      email,
+      password: hashedPassword,
+      fullName,
+      phoneNumber,
+      avatar,
+    });
+
     await user.save();
-    res.status(201).json(user);
+    res.status(201).json({ message: "Tạo tài khoản thành công" });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -62,10 +79,43 @@ const deleteUser = async (req, res) => {
   }
 };
 
+const jwt = require("jsonwebtoken");
+
+const getProfile = async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res
+        .status(401)
+        .json({ message: "Thiếu hoặc sai định dạng token" });
+    }
+
+    const token = authHeader.split(" ")[1];
+
+    const decoded = jwt.verify(token, process.env.JWT_KEY || "secret");
+
+    const user = await User.findById(decoded.userId).select("-password");
+
+    if (!user) {
+      return res.status(404).json({ message: "Không tìm thấy người dùng" });
+    }
+
+    return res.status(200).json(user); // ✅ Trả trực tiếp object user (không bọc thêm trong `{ user: ... }`)
+  } catch (err) {
+    return res
+      .status(401)
+      .json({ message: "Token không hợp lệ", error: err.message });
+  }
+};
+
+module.exports = { getProfile };
+
 module.exports = {
   getAllUsers,
   getUserById,
   createUser,
   updateUser,
   deleteUser,
+  getProfile,
 };

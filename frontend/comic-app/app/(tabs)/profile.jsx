@@ -1,74 +1,80 @@
-import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 import React from "react";
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+  Alert,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useUser } from "../../context/UserContext"; // đúng đường dẫn
 
 const ProfileScreen = () => {
   const router = useRouter();
+  const { user, setUser } = useUser();
 
-  // Giả lập trạng thái đăng nhập
-  const username = "Khách"; // hoặc "Katta" nếu đã đăng nhập
-  const isLoggedIn = username !== "Khách";
+  const isLoggedIn = !!user;
 
   const handleAvatarPress = () => {
     if (!isLoggedIn) {
       router.push("/login");
     } else {
-      // logic mở image picker
-      console.log("Open image picker to update avatar");
+      Alert.alert("Avatar", "Chức năng chọn ảnh chưa được cài đặt.");
     }
   };
-  const handleChangePassword = () => {
-    router.push("/change-password"); // ví dụ: định tuyến tới màn hình đổi mật khẩu
+
+  const handleLogout = async () => {
+    await AsyncStorage.removeItem("token");
+    setUser(null);
+    Alert.alert("Đăng xuất", "Bạn đã đăng xuất.");
+    console.log("User logged out");
   };
 
-  const handleLogout = () => {
-    console.log("Đăng xuất người dùng...");
-    // Thêm logic xóa token / xóa trạng thái người dùng
-  };
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Tài khoản</Text>
 
-      {/* Avatar + Camera */}
       <View style={styles.avatarContainer}>
         <TouchableOpacity onPress={handleAvatarPress}>
           <Image
-            source={require("@/assets/images/hacker-avatar-with-laptop-free-vector.png")}
+            source={
+              isLoggedIn && user?.avatar
+                ? { uri: user.avatar }
+                : require("@/assets/images/hacker-avatar-with-laptop-free-vector.png")
+            }
             style={styles.avatar}
           />
-          <View style={styles.cameraIcon}>
-            <Ionicons name="camera" size={20} color="white" />
-          </View>
+          {isLoggedIn && (
+            <View style={styles.cameraIcon}>
+              <Ionicons name="camera" size={20} color="white" />
+            </View>
+          )}
         </TouchableOpacity>
       </View>
 
-      {/* Thông tin */}
-      <Text style={styles.username}>{username}</Text>
-      <Text style={styles.email}>thangquoc10052020@gmail.com</Text>
-      <Text style={styles.userId}>TCM5944</Text>
+      <Text style={styles.username}>
+        {isLoggedIn ? user.loginName : "Khách"}
+      </Text>
+      {isLoggedIn && <Text style={styles.email}>{user.email}</Text>}
 
-      {/* Mô tả */}
       {!isLoggedIn && (
-        <Text style={styles.description}>Đăng nhập để đồng bộ dữ liệu</Text>
+        <>
+          <Text style={styles.description}>Đăng nhập để đồng bộ dữ liệu</Text>
+          <TouchableOpacity
+            style={styles.loginButton}
+            onPress={() => router.push("/login")}
+          >
+            <Text style={styles.loginButtonText}>Đăng nhập</Text>
+          </TouchableOpacity>
+        </>
       )}
 
-      {/* Nút đăng nhập */}
-      {!isLoggedIn && (
-        <TouchableOpacity
-          style={styles.loginButton}
-          onPress={() => router.push("/login")}
-        >
-          <Text style={styles.loginButtonText}>Đăng nhập</Text>
-        </TouchableOpacity>
-      )}
-      {/* Đổi mật khẩu + Đăng xuất */}
       {isLoggedIn && (
         <>
-          <TouchableOpacity
-            style={styles.optionButton}
-            onPress={handleChangePassword}
-          >
+          <TouchableOpacity style={styles.optionButton}>
             <Ionicons name="lock-closed" size={20} color="#2196F3" />
             <Text style={styles.optionText}>Đổi mật khẩu</Text>
           </TouchableOpacity>
@@ -121,10 +127,7 @@ const styles = StyleSheet.create({
   },
   email: {
     color: "#ccc",
-  },
-  userId: {
-    color: "#ccc",
-    marginBottom: 10,
+    marginTop: 4,
   },
   description: {
     color: "#aaa",
@@ -141,6 +144,20 @@ const styles = StyleSheet.create({
   loginButtonText: {
     color: "#fff",
     fontWeight: "bold",
+    fontSize: 16,
+  },
+  optionButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#1a1a1a",
+    padding: 12,
+    borderRadius: 8,
+    marginTop: 16,
+    width: "90%",
+    gap: 10,
+  },
+  optionText: {
+    color: "#fff",
     fontSize: 16,
   },
 });
