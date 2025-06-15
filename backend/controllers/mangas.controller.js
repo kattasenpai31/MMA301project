@@ -60,10 +60,21 @@ const deleteManga = async (req, res) => {
   }
 };
 
+const getMangasByCategory = async (req, res) => {
+  try {
+    const categoryName = req.params.id;
+    const mangas = await Manga.find({ categories: categoryName });
+    res.json(mangas);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 module.exports = {
   getAllMangas,
   getMangaById,
   createManga,
   updateManga,
   deleteManga,
+  getMangasByCategory,
 };

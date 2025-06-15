@@ -13,19 +13,17 @@ export default function BotTabsLayout() {
       screenOptions={{
         headerShown: false,
         tabBarShowLabel: false,
+        tabBarHideOnKeyboard: true, // Giúp tránh đè
         tabBarStyle: {
-          position: "absolute",
-          bottom: 16,
-          left: 16,
-          right: 16,
           height: Platform.OS === "ios" ? 80 : 70,
-          backgroundColor: "black", // nền đen
-          borderTopWidth: 1, // Thêm đường kẻ
-          borderTopColor: "#fff", // Màu trắng
+          backgroundColor: "black",
+          borderTopWidth: 1,
+          borderTopColor: "#fff",
           paddingTop: 8,
-
-          elevation: 10,
           shadowColor: "#000",
+          shadowOpacity: 0.1,
+          shadowOffset: { width: 0, height: -1 },
+          shadowRadius: 6,
         },
       }}
     >

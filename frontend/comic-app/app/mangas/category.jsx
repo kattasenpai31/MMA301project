@@ -8,11 +8,11 @@ import {
   useColorScheme,
   ActivityIndicator,
 } from "react-native";
-
+import { useRouter } from "expo-router";
 const CategoryScreen = () => {
   const [categories, setCategories] = useState([]);
   const colorScheme = useColorScheme();
-
+  const router = useRouter();
   // Gọi API lấy dữ liệu từ NodeJS backend
   const fetchCategories = async () => {
     try {
@@ -29,7 +29,15 @@ const CategoryScreen = () => {
   }, []);
 
   const renderItem = ({ item }) => (
-    <TouchableOpacity style={styles.itemContainer}>
+    <TouchableOpacity
+      style={styles.itemContainer}
+      onPress={() =>
+        router.push({
+          pathname: "/mangas/category/[id]",
+          params: { id: item.name, name: item.name },
+        })
+      }
+    >
       <Text style={styles.itemText}>{item.name}</Text>
     </TouchableOpacity>
   );

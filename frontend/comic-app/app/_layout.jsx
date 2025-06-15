@@ -26,6 +26,10 @@ export default function RootLayout() {
             name="mangas/[id]"
             options={{ title: "Chi tiết Manga", presentation: "card" }}
           />
+          <Stack.Screen
+            name="mangas/category/[id]"
+            options={{ title: "Manga theo thể loại", presentation: "card" }}
+          />
         </Stack>
         <StatusBar style="auto" />
       </ThemeProvider>

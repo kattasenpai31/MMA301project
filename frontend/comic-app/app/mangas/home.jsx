@@ -11,12 +11,23 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 const windowWidth = Dimensions.get("window").width;
-const isMobile = windowWidth < 768;
+let numColumns = 2;
 
-const ITEM_WIDTH = isMobile
-  ? (windowWidth - 32) / 2 // mobile: 2 items, 16px tổng padding
-  : (windowWidth - 60) / 5; // web: 5 items, 12px padding 2 bên + 9px * 4 khoảng trống
+if (windowWidth >= 1200) {
+  numColumns = 5;
+} else if (windowWidth >= 992) {
+  numColumns = 4;
+} else if (windowWidth >= 768) {
+  numColumns = 3;
+} else {
+  numColumns = 2; // mobile mặc định
+}
 
+const ITEM_GAP = 12;
+const horizontalPadding = 24; // tổng padding 2 bên
+const ITEM_WIDTH =
+  (windowWidth - horizontalPadding - (numColumns - 1) * ITEM_GAP) / numColumns;
+const ITEM_HEIGHT = ITEM_WIDTH * 1.4;
 export default function MangaHomeScreen() {
   const router = useRouter();
   const [mangas, setMangas] = useState([]);
@@ -94,7 +105,7 @@ export default function MangaHomeScreen() {
                     : "Đang tiến hành"}
                 </Text>
                 <Text style={styles.categories} numberOfLines={1}>
-                  {manga.categories.map((cat) => cat.name).join(", ")}
+                  {manga.categories.map((cat) => cat.name || cat).join(", ")}
                 </Text>
               </View>
             </TouchableOpacity>
@@ -107,17 +118,24 @@ export default function MangaHomeScreen() {
         Tất cả Manga
       </Text>
       <View style={styles.gridContainer}>
-        {mangas.map((manga) => (
+        {mangas.map((manga, index) => (
           <TouchableOpacity
             key={manga._id}
-            style={[styles.gridItem, { width: ITEM_WIDTH }]}
+            style={[
+              styles.gridItem,
+              {
+                width: ITEM_WIDTH,
+                marginRight:
+                  index % numColumns === numColumns - 1 ? 0 : ITEM_GAP,
+              },
+            ]}
             onPress={() => router.push(`/mangas/${manga._id}`)}
           >
             <Image
               source={{ uri: manga.coverImage }}
               style={styles.gridImage}
             />
-            <View style={styles.infoContainer}>
+            <View style={styles.gridInfo}>
               <Text style={styles.title} numberOfLines={1}>
                 {manga.title}
               </Text>
@@ -209,25 +227,26 @@ const styles = StyleSheet.create({
   gridContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
-    justifyContent: "space-between",
     paddingHorizontal: 12,
-    marginTop: 12,
-    gap: 12,
   },
 
   gridItem: {
     backgroundColor: "#1e1e1e",
-    marginBottom: 16,
-    overflow: "hidden",
+    marginBottom: 12,
+    marginRight: ITEM_GAP,
   },
 
   gridImage: {
     width: "100%",
-    height: isMobile ? 200 : 240,
+    height: ITEM_HEIGHT,
     resizeMode: "cover",
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
   },
-
   gridInfo: {
     padding: 8,
+    backgroundColor: "#1e1e1e",
+    borderBottomLeftRadius: 12,
+    borderBottomRightRadius: 12,
   },
 });
