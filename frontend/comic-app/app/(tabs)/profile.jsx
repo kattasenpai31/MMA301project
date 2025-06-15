@@ -74,7 +74,10 @@ const ProfileScreen = () => {
 
       {isLoggedIn && (
         <>
-          <TouchableOpacity style={styles.optionButton}>
+          <TouchableOpacity
+            style={styles.optionButton}
+            onPress={() => router.push("/change-password")}
+          >
             <Ionicons name="lock-closed" size={20} color="#2196F3" />
             <Text style={styles.optionText}>Đổi mật khẩu</Text>
           </TouchableOpacity>

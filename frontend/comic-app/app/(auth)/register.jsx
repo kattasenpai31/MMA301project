@@ -6,10 +6,20 @@ import {
   TextInput,
   TouchableOpacity,
   Alert,
+  Platform,
 } from "react-native";
 import { useRouter } from "expo-router";
+
 export default function RegisterScreen() {
-  const [form, setForm] = useState({
+  /*************  ✨ Windsurf Command ⭐  *************/
+  /**
+   * RegisterScreen: Màn hình đăng ký.
+   * @returns Một màn hình đăng ký, bao gồm các trường nhập liệu và nút đăng ký.
+   */
+  /*******  ce717e17-1899-4336-a665-09814e19f9e3  *******/ const [
+    form,
+    setForm,
+  ] = useState({
     loginName: "",
     fullName: "",
     phoneNumber: "",
@@ -41,7 +51,6 @@ export default function RegisterScreen() {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-
   const handleRegister = async () => {
     if (!validate()) return;
 
@@ -59,14 +68,37 @@ export default function RegisterScreen() {
       });
 
       if (response.ok) {
-        Alert.alert("Đăng ký thành công!");
-        router.replace("/login");
+        if (Platform.OS === "web") {
+          alert("Đăng ký thành công. Bạn sẽ được chuyển đến trang đăng nhập.");
+          router.replace("/login");
+        } else {
+          Alert.alert(
+            "Đăng ký thành công",
+            "Tài khoản đã được tạo. Bạn muốn quay lại trang đăng nhập?",
+            [
+              { text: "Ở lại", style: "cancel" },
+              {
+                text: "Đi đến đăng nhập",
+                onPress: () => router.replace("/login"),
+              },
+            ]
+          );
+        }
       } else {
         const data = await response.json();
-        Alert.alert("Đăng ký thất bại", data.message || "Đã có lỗi xảy ra");
+        const message = data.message || "Đã có lỗi xảy ra";
+        if (Platform.OS === "web") {
+          alert(`Đăng ký thất bại: ${message}`);
+        } else {
+          Alert.alert("Đăng ký thất bại", message);
+        }
       }
     } catch (error) {
-      Alert.alert("Lỗi", error.message);
+      if (Platform.OS === "web") {
+        alert(`Lỗi: ${error.message}`);
+      } else {
+        Alert.alert("Lỗi", error.message);
+      }
     }
   };
 

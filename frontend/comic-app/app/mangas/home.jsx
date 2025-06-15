@@ -56,7 +56,14 @@ export default function MangaHomeScreen() {
       oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
       return createdAt >= oneWeekAgo;
     })
-    .slice(0, 10); // lấy giới hạn 10 manga gần đây nhất
+    .slice(0, 6); // Lấy 6 manga cập nhật gần đây
+  if (!mangas || mangas.length === 0) {
+    return (
+      <View style={[styles.container, styles.center]}>
+        <Text style={{ color: "#fff" }}>Không có manga nào để hiển thị.</Text>
+      </View>
+    );
+  }
 
   if (loading) {
     return (
@@ -71,7 +78,7 @@ export default function MangaHomeScreen() {
       {/* --- CẬP NHẬT GẦN ĐÂY --- */}
       <View style={styles.sectionHeader}>
         <Text style={styles.sectionTitle}>Cập nhật gần đây</Text>
-        <TouchableOpacity onPress={() => router.push("/recent")}>
+        <TouchableOpacity onPress={() => router.push("/all_recent")}>
           <Text style={styles.seeAll}>Xem tất cả &gt;</Text>
         </TouchableOpacity>
       </View>

@@ -109,7 +109,34 @@ const getProfile = async (req, res) => {
   }
 };
 
-module.exports = { getProfile };
+const ChangePassword = async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ message: "Thiếu mật khẩu" });
+    }
+
+    const user = await User.findById(req.userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "Không tìm thấy người dùng" });
+    }
+
+    // So sánh chuỗi (không dùng bcrypt)
+    if (user.password !== currentPassword) {
+      return res.status(400).json({ message: "Mật khẩu hiện tại không đúng" });
+    }
+
+    // Gán mật khẩu mới (không mã hoá)
+    user.password = newPassword;
+    await user.save();
+
+    return res.status(200).json({ message: "Đổi mật khẩu thành công" });
+  } catch (err) {
+    return res.status(500).json({ message: "Lỗi máy chủ", error: err.message });
+  }
+};
 
 module.exports = {
   getAllUsers,
@@ -118,4 +145,5 @@ module.exports = {
   updateUser,
   deleteUser,
   getProfile,
+  ChangePassword,
 };

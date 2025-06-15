@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
+  Platform,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -30,12 +31,28 @@ export default function LoginScreen() {
 
       await fetchUser();
 
-      Alert.alert("Thành công", "Đăng nhập thành công");
+      // ✅ Alert đa nền tảng
+      if (Platform.OS === "web") {
+        alert("Đăng nhập thành công!");
+      } else {
+        Alert.alert("Thành công", "Đăng nhập thành công");
+      }
+
       console.log("Login successful");
-      console.log("User data:", res.data.user); // Debugging line
+      console.log("User data:", res.data.user);
       router.replace("/(tabs)");
     } catch (error) {
-      setError("Đăng nhập thất bại. Vui lòng kiểm tra thông tin.");
+      const msg =
+        error.response?.data?.message ||
+        "Đăng nhập thất bại. Vui lòng kiểm tra thông tin.";
+
+      if (Platform.OS === "web") {
+        alert(msg);
+      } else {
+        Alert.alert("Lỗi", msg);
+      }
+
+      setError(msg); // Nếu bạn đang sử dụng error state để hiển thị UI
     }
   };
 
