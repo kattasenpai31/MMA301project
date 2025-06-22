@@ -8,6 +8,15 @@ const ChapterSchema = new mongoose.Schema({
   },
   title: { type: String, required: true },
   chapterNumber: { type: Number, required: true },
+
+  pages: [
+    {
+      path: { type: String, required: true },
+      order: { type: Number, required: true },
+    },
+  ],
+  viewCount: { type: Number, default: 0 },
+  releaseDate: { type: Date, default: Date.now },
   createdAt: { type: Date, default: Date.now },
 });
 

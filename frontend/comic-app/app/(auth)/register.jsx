@@ -11,15 +11,7 @@ import {
 import { useRouter } from "expo-router";
 
 export default function RegisterScreen() {
-  /*************  ✨ Windsurf Command ⭐  *************/
-  /**
-   * RegisterScreen: Màn hình đăng ký.
-   * @returns Một màn hình đăng ký, bao gồm các trường nhập liệu và nút đăng ký.
-   */
-  /*******  ce717e17-1899-4336-a665-09814e19f9e3  *******/ const [
-    form,
-    setForm,
-  ] = useState({
+  const [form, setForm] = useState({
     loginName: "",
     fullName: "",
     phoneNumber: "",

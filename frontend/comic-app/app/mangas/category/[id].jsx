@@ -38,7 +38,7 @@ const MangaByCategory = () => {
     const fetchMangasByCategory = async (categoryName) => {
       try {
         const response = await fetch(
-          `http://localhost:9999/api/mangas/category/${categoryName}`
+          `http://localhost:9999/api/mangas/category/${id}`
         );
         const data = await response.json();
         console.log("Fetched mangas: ", data);

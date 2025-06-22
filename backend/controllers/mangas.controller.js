@@ -13,10 +13,19 @@ const getAllMangas = async (req, res) => {
 
 const getMangaById = async (req, res) => {
   try {
-    const manga = await Manga.findById(req.params.id);
+    const manga = await Manga.findById(req.params.id)
+      .populate("categories", "name")
+      .populate({
+        path: "chapters",
+        model: "Chapters",
+        options: { sort: { chapterNumber: -1 } }, // sắp xếp chương mới nhất lên đầu
+        select: "title chapterNumber releaseDate createdAt", // chỉ lấy những trường cần thiết
+      });
+
     if (!manga) {
       return res.status(404).json({ message: "Manga not found" });
     }
+
     res.json(manga);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -62,14 +71,21 @@ const deleteManga = async (req, res) => {
 
 const getMangasByCategory = async (req, res) => {
   try {
-    const categoryName = req.params.id;
-    const mangas = await Manga.find({ categories: categoryName });
+    const Id = req.params.id;
+
+    if (!mongoose.Types.ObjectId.isValid(Id)) {
+      return res.status(400).json({ error: "Invalid category ID" });
+    }
+
+    const mangas = await Manga.find({ categories: Id }).populate(
+      "categories",
+      "name"
+    );
     res.json(mangas);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
-
 module.exports = {
   getAllMangas,
   getMangaById,

@@ -34,7 +34,7 @@ const CategoryScreen = () => {
       onPress={() =>
         router.push({
           pathname: "/mangas/category/[id]",
-          params: { id: item.name, name: item.name },
+          params: { id: item._id, name: item.name },
         })
       }
     >

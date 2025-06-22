@@ -3,10 +3,11 @@ const MangaRouter = express.Router();
 
 const MangaController = require("../controllers/mangas.controller");
 
-MangaRouter.get("/", MangaController.getAllMangas);
+MangaRouter.get("/category/:id", MangaController.getMangasByCategory);
 MangaRouter.get("/:id", MangaController.getMangaById);
-MangaRouter.post("/", MangaController.createManga);
 MangaRouter.put("/:id", MangaController.updateManga);
 MangaRouter.delete("/:id", MangaController.deleteManga);
-MangaRouter.get("/category/:id", MangaController.getMangasByCategory);
+MangaRouter.get("/", MangaController.getAllMangas);
+MangaRouter.post("/", MangaController.createManga);
+
 module.exports = MangaRouter;

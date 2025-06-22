@@ -6,7 +6,11 @@ const MangaSchema = new mongoose.Schema({
   description: { type: String },
   author: { type: String },
   status: { type: String, enum: ["ongoing", "completed"], default: "ongoing" },
-  categories: [{ type: String }],
+  categories: [
+    { type: mongoose.Schema.Types.ObjectId, ref: "Category", required: true },
+  ],
+  chapters: [{ type: mongoose.Schema.Types.ObjectId, ref: "Chapters" }],
+  comment: { type: mongoose.Schema.Types.ObjectId, ref: "Comments" },
   coverImage: { type: String },
   createdAt: { type: Date, default: Date.now },
 });
