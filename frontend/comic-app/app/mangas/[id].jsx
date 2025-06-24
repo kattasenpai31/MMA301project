@@ -36,6 +36,12 @@ export default function MangaDetail() {
     <ScrollView style={{ flex: 1, backgroundColor: "#0a0a0a" }}>
       {/* Header image */}
       <View style={{ position: "relative" }}>
+        <TouchableOpacity
+          onPress={() => router.back()}
+          style={styles.backButton}
+        >
+          <ArrowLeft size={24} color="white" />
+        </TouchableOpacity>
         <Image
           source={{ uri: manga.coverImage }}
           style={styles.coverImage}
@@ -46,12 +52,6 @@ export default function MangaDetail() {
         <View style={styles.darkOverlay} />
 
         {/* Nút quay lại */}
-        <TouchableOpacity
-          onPress={() => router.back()}
-          style={styles.backButton}
-        >
-          <ArrowLeft size={24} color="white" />
-        </TouchableOpacity>
 
         {/* Thông tin truyện */}
         <View style={styles.infoOverlay}>
@@ -62,7 +62,12 @@ export default function MangaDetail() {
           </Text>
           <Text style={styles.title}>{manga.title}</Text>
           <TouchableOpacity
-            onPress={() => router.push(`/description/${manga._id}`)}
+            onPress={() =>
+              router.push({
+                pathname: "/mangas/description/[id]",
+                params: { id: manga._id },
+              })
+            }
             style={{ flexDirection: "row", alignItems: "center", marginTop: 4 }}
           >
             <Text style={styles.description} numberOfLines={2}>
@@ -110,9 +115,9 @@ export default function MangaDetail() {
             onPress={() => router.push(`/chapter/${chap._id}`)}
           >
             <Text style={{ color: "#fff" }}>
-              Chapter {chap.number} {index === 0 ? "(mới)" : ""}
+              Chapter {chap.chapterNumber} {index === 0 ? "(mới)" : ""}
             </Text>
-            <Text style={{ color: "#aaa" }}>{formatDate(chap.updatedAt)}</Text>
+            <Text style={{ color: "#aaa" }}>{formatDate(chap.createdAt)}</Text>
           </TouchableOpacity>
         ))}
       </View>
@@ -204,8 +209,18 @@ const styles = StyleSheet.create({
 function formatDate(dateStr) {
   const date = new Date(dateStr);
   const now = new Date();
-  const diff = Math.abs(now - date);
-  const hours = Math.floor(diff / 36e5);
+  const diffMs = now - date;
+  const seconds = Math.floor(diffMs / 1000);
+  const minutes = Math.floor(diffMs / (1000 * 60));
+  const hours = Math.floor(diffMs / (1000 * 60 * 60));
+  const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  const months = Math.floor(diffMs / (1000 * 60 * 60 * 24 * 30));
+  const years = Math.floor(diffMs / (1000 * 60 * 60 * 24 * 365));
+
+  if (seconds < 60) return "Vừa xong";
+  if (minutes < 60) return `${minutes} phút trước`;
   if (hours < 24) return `${hours} tiếng trước`;
-  return date.toLocaleDateString("vi-VN");
+  if (days < 30) return `${days} ngày trước`;
+  if (months < 12) return `${months} tháng trước`;
+  return `${years} năm trước`;
 }

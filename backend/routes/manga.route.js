@@ -2,7 +2,7 @@ const express = require("express");
 const MangaRouter = express.Router();
 
 const MangaController = require("../controllers/mangas.controller");
-
+MangaRouter.get("/description/:id", MangaController.getMangaById);
 MangaRouter.get("/category/:id", MangaController.getMangasByCategory);
 MangaRouter.get("/:id", MangaController.getMangaById);
 MangaRouter.put("/:id", MangaController.updateManga);

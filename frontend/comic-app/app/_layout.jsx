@@ -31,6 +31,10 @@ export default function RootLayout() {
             options={{ title: "Manga theo thể loại", presentation: "card" }}
           />
           <Stack.Screen
+            name="mangas/description/[id]"
+            options={{ title: "Chi tiết", presentation: "card" }}
+          />
+          <Stack.Screen
             name="/change-password"
             options={{ title: "Đổi Mật khẩu ở profile" }}
           />

@@ -16,7 +16,6 @@ const ChapterSchema = new mongoose.Schema({
     },
   ],
   viewCount: { type: Number, default: 0 },
-  releaseDate: { type: Date, default: Date.now },
   createdAt: { type: Date, default: Date.now },
 });
 

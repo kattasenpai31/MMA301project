@@ -19,7 +19,7 @@ const getMangaById = async (req, res) => {
         path: "chapters",
         model: "Chapters",
         options: { sort: { chapterNumber: -1 } }, // sắp xếp chương mới nhất lên đầu
-        select: "title chapterNumber releaseDate createdAt", // chỉ lấy những trường cần thiết
+        select: "title chapterNumber createdAt", // chỉ lấy những trường cần thiết
       });
 
     if (!manga) {

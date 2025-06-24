@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const Category = require("./Category");
-
+const Comments = require("./Comments");
+const Chapters = require("./Chapters");
 const MangaSchema = new mongoose.Schema({
   title: { type: String, required: true },
   description: { type: String },
