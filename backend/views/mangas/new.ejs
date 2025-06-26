@@ -1,0 +1,38 @@
+<% layout('../layouts/main') %>
+
+<h2>Thêm Manga mới</h2>
+
+<a href="/mangas" class="btn btn-secondary mb-3">← Quay lại</a>
+
+<form action="/mangas" method="POST">
+  <div class="mb-3">
+    <label>Tiêu đề</label>
+    <input type="text" name="title" class="form-control" required />
+  </div>
+  <div class="mb-3">
+    <label>Tác giả</label>
+    <input type="text" name="author" class="form-control" />
+  </div>
+  <div class="mb-3">
+    <label>Trạng thái</label>
+    <select name="status" class="form-select">
+      <option value="ongoing">Đang cập nhật</option>
+      <option value="completed">Hoàn thành</option>
+    </select>
+  </div>
+ <div class="mb-3">
+  <label>Thể loại</label><br />
+  <% categories.forEach(cat => { %>
+    <div class="form-check form-check-inline">
+      <input class="form-check-input" type="checkbox" name="categories" id="cat_<%= cat._id %>" value="<%= cat._id %>">
+      <label class="form-check-label" for="cat_<%= cat._id %>"><%= cat.name %></label>
+    </div>
+  <% }) %>
+</div>
+
+  <div class="mb-3">
+    <label>Ảnh bìa (URL)</label>
+    <input type="text" name="coverImage" class="form-control" />
+  </div>
+  <button class="btn btn-primary">Lưu</button>
+</form>

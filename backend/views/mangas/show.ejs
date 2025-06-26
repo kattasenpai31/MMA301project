@@ -1,0 +1,11 @@
+<% layout('../layouts/main') %>
+
+<h2><%= manga.title %></h2>
+<p><strong>Tác giả:</strong> <%= manga.author %></p>
+<p><strong>Trạng thái:</strong> <%= manga.status %></p>
+<p><strong>Thể loại:</strong> <%= manga.categories.map(c => c.name).join(', ') %></p>
+<img src="<%= manga.coverImage %>" alt="Ảnh bìa" class="img-fluid my-3" />
+<p><strong>Mô tả:</strong> <%= manga.description || "Chưa có mô tả" %></p>
+
+<a href="/mangas" class="btn btn-secondary">Quay lại</a>
+<a href="/mangas/<%= manga._id %>/edit" class="btn btn-warning">Sửa</a>

@@ -35,6 +35,10 @@ const getMangaById = async (req, res) => {
 const createManga = async (req, res) => {
   try {
     const manga = new Manga(req.body);
+    if (typeof req.body.categories === "string") {
+      req.body.categories = req.body.categories.split(",");
+    }
+
     await manga.save();
     res.status(201).json(manga);
   } catch (error) {
