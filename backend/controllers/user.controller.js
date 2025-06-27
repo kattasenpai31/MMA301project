@@ -163,6 +163,33 @@ const uploadAvatar = async (req, res) => {
     res.status(500).json({ message: "Lỗi server khi upload ảnh" });
   }
 };
+const forgotPassword = async (req, res) => {
+  try {
+    const { email, newPassword } = req.body;
+
+    if (!email || !newPassword) {
+      return res
+        .status(400)
+        .json({ message: "Vui lòng nhập đầy đủ thông tin." });
+    }
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ message: "Email không tồn tại." });
+    }
+
+    // Gán trực tiếp mật khẩu mới (không mã hoá)
+    user.password = newPassword;
+
+    await user.save();
+
+    return res.json({ message: "Mật khẩu đã được đặt lại thành công." });
+  } catch (error) {
+    console.error("Forgot password error:", error);
+    return res.status(500).json({ message: "Đã có lỗi xảy ra." });
+  }
+};
 module.exports = {
   getAllUsers,
   getUserById,
@@ -172,4 +199,5 @@ module.exports = {
   getProfile,
   ChangePassword,
   uploadAvatar,
+  forgotPassword,
 };

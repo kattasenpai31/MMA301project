@@ -16,6 +16,7 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage: storage });
+UserRouter.post("/forgot_password", UserController.forgotPassword);
 UserRouter.post(
   "/upload-avatar",
   authenticateToken,
