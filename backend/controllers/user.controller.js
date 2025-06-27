@@ -138,6 +138,31 @@ const ChangePassword = async (req, res) => {
   }
 };
 
+const uploadAvatar = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: "Không có tệp được tải lên." });
+    }
+
+    const avatarPath = `/uploads/avatars/${req.file.filename}`;
+    const userId = req.userId; // từ middleware đã gán
+
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { avatar: avatarPath },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(404).json({ message: "Không tìm thấy người dùng" });
+    }
+
+    res.json({ avatarUrl: avatarPath });
+  } catch (error) {
+    console.error("Lỗi upload avatar:", error);
+    res.status(500).json({ message: "Lỗi server khi upload ảnh" });
+  }
+};
 module.exports = {
   getAllUsers,
   getUserById,
@@ -146,4 +171,5 @@ module.exports = {
   deleteUser,
   getProfile,
   ChangePassword,
+  uploadAvatar,
 };

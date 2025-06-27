@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -6,31 +6,116 @@ import {
   StyleSheet,
   TouchableOpacity,
   Alert,
+  Platform,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useUser } from "../../context/UserContext"; // đúng đường dẫn
+import * as ImagePicker from "expo-image-picker";
+import { useUser } from "../../context/UserContext";
 
 const ProfileScreen = () => {
   const router = useRouter();
   const { user, setUser } = useUser();
-
   const isLoggedIn = !!user;
 
-  const handleAvatarPress = () => {
+  const handleAvatarPress = async () => {
     if (!isLoggedIn) {
       router.push("/login");
-    } else {
-      Alert.alert("Avatar", "Chức năng chọn ảnh chưa được cài đặt.");
+      return;
     }
+
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== "granted") {
+      Alert.alert("Thông báo", "Bạn cần cấp quyền truy cập thư viện.");
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      quality: 1,
+      base64: false,
+    });
+
+    if (result.canceled) return;
+
+    const imageUri = result.assets[0].uri;
+    await uploadAvatar(imageUri);
   };
 
+  const getMimeType = (ext) => {
+    switch (ext.toLowerCase()) {
+      case "jpg":
+      case "jpeg":
+        return "image/jpeg";
+      case "png":
+        return "image/png";
+      default:
+        return "image/*";
+    }
+  };
+  const dataUrlToBlob = async (dataUrl) => {
+    const res = await fetch(dataUrl);
+    return await res.blob();
+  };
+
+  const uploadAvatar = async (imageUri) => {
+    try {
+      const token = await AsyncStorage.getItem("token");
+
+      const filename = imageUri.split("/").pop();
+      const ext = filename.split(".").pop().toLowerCase();
+      const mimeType = getMimeType(ext);
+
+      let file;
+
+      if (Platform.OS === "web") {
+        const blob = await dataUrlToBlob(imageUri);
+        file = new File([blob], filename, { type: mimeType });
+      } else {
+        file = {
+          uri: imageUri,
+          name: filename,
+          type: mimeType,
+        };
+      }
+
+      const formData = new FormData();
+      formData.append("avatar", file);
+
+      const res = await fetch("http://localhost:9999/api/users/upload-avatar", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          // ❗ KHÔNG set Content-Type
+        },
+        body: formData,
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        console.error("❌ Upload failed:", data);
+        Alert.alert("Lỗi", data.message || "Upload avatar thất bại.");
+        return;
+      }
+
+      setUser((prev) => ({
+        ...prev,
+        avatar: data.avatarUrl,
+      }));
+
+      Alert.alert("✅ Thành công", "Đã cập nhật avatar!");
+    } catch (error) {
+      console.error("❗ Lỗi uploadAvatar:", error);
+      Alert.alert("Lỗi", "Không thể upload avatar.");
+    }
+  };
   const handleLogout = async () => {
     await AsyncStorage.removeItem("token");
     setUser(null);
     Alert.alert("Đăng xuất", "Bạn đã đăng xuất.");
-    console.log("User logged out");
   };
 
   return (
@@ -42,7 +127,7 @@ const ProfileScreen = () => {
           <Image
             source={
               isLoggedIn && user?.avatar
-                ? { uri: user.avatar }
+                ? { uri: `http://localhost:9999${user.avatar}` }
                 : require("@/assets/images/hacker-avatar-with-laptop-free-vector.png")
             }
             style={styles.avatar}
@@ -60,7 +145,7 @@ const ProfileScreen = () => {
       </Text>
       {isLoggedIn && <Text style={styles.email}>{user.email}</Text>}
 
-      {!isLoggedIn && (
+      {!isLoggedIn ? (
         <>
           <Text style={styles.description}>Đăng nhập để đồng bộ dữ liệu</Text>
           <TouchableOpacity
@@ -70,9 +155,7 @@ const ProfileScreen = () => {
             <Text style={styles.loginButtonText}>Đăng nhập</Text>
           </TouchableOpacity>
         </>
-      )}
-
-      {isLoggedIn && (
+      ) : (
         <>
           <TouchableOpacity
             style={styles.optionButton}
@@ -95,7 +178,7 @@ const ProfileScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#000",
+    backgroundColor: "#000", // nền đen
     alignItems: "center",
     paddingTop: 80,
   },
