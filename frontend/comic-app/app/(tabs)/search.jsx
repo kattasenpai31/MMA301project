@@ -1,41 +1,73 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
   TextInput,
-  FlatList,
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  Image,
+  Dimensions,
+  Keyboard,
 } from "react-native";
+import { useRouter } from "expo-router";
 
-const recentManga = [
-  {
-    id: "1",
-    title: "Attack on Titan",
-    genres: ["Action", "Drama"],
-  },
-  {
-    id: "2",
-    title: "My Hero Academia",
-    genres: ["Action", "Superpower"],
-  },
-  {
-    id: "3",
-    title: "Jujutsu Kaisen",
-    genres: ["Fantasy", "Horror"],
-  },
-];
+const windowWidth = Dimensions.get("window").width;
+let numColumns = 2;
+if (windowWidth >= 1200) numColumns = 5;
+else if (windowWidth >= 992) numColumns = 4;
+else if (windowWidth >= 768) numColumns = 3;
+
+const ITEM_GAP = 12;
+const horizontalPadding = 24;
+const ITEM_WIDTH =
+  (windowWidth - horizontalPadding - (numColumns - 1) * ITEM_GAP) / numColumns;
+const ITEM_HEIGHT = ITEM_WIDTH * 1.4;
 
 const SearchScreen = () => {
+  const router = useRouter();
   const [search, setSearch] = useState("");
-  const [keywords, setKeywords] = useState([
-    "Naruto",
-    "One Piece",
-    "Bleach",
-    "Demon Slayer",
-    "Chainsaw Man",
-  ]);
+  const [keywords, setKeywords] = useState([]);
+  const [mangas, setMangas] = useState([]);
+  const [filtered, setFiltered] = useState([]);
+
+  useEffect(() => {
+    const fetchMangas = async () => {
+      try {
+        const res = await fetch("http://localhost:9999/api/mangas");
+        const data = await res.json();
+        setMangas(data);
+        setFiltered(data); // mặc định hiện tất cả
+      } catch (error) {
+        console.error("Failed to fetch mangas:", error);
+      }
+    };
+    fetchMangas();
+  }, []);
+
+  const handleSubmitSearch = () => {
+    const trimmed = search.trim();
+
+    // Nếu chuỗi rỗng -> hiện tất cả
+    if (!trimmed) {
+      setFiltered(mangas);
+      Keyboard.dismiss();
+      return;
+    }
+
+    // Lọc toàn bộ manga (không chỉ manga gần đây)
+    const filteredManga = mangas.filter((manga) =>
+      manga.title.toLowerCase().includes(trimmed.toLowerCase())
+    );
+
+    setFiltered(filteredManga);
+
+    if (!keywords.includes(trimmed)) {
+      setKeywords((prev) => [trimmed, ...prev.slice(0, 9)]);
+    }
+
+    Keyboard.dismiss();
+  };
 
   const removeKeyword = (index) => {
     const newKeywords = [...keywords];
@@ -43,29 +75,56 @@ const SearchScreen = () => {
     setKeywords(newKeywords);
   };
 
-  const clearAll = () => {
-    setKeywords([]);
-  };
+  const clearAll = () => setKeywords([]);
 
-  const renderMangaItem = ({ item }) => (
-    <View style={styles.mangaItem}>
-      <Text style={styles.mangaTitle}>{item.title}</Text>
-      <Text style={styles.mangaGenres}>{item.genres.join(", ")}</Text>
-    </View>
+  const renderItem = ({ item, index }) => (
+    <TouchableOpacity
+      key={item._id}
+      style={[
+        styles.gridItem,
+        {
+          width: ITEM_WIDTH,
+          marginRight: index % numColumns === numColumns - 1 ? 0 : ITEM_GAP,
+        },
+      ]}
+      onPress={() => router.push(`/mangas/${item._id}`)}
+    >
+      <Image source={{ uri: item.coverImage }} style={styles.gridImage} />
+      <View style={styles.gridInfo}>
+        <Text style={styles.title} numberOfLines={1}>
+          {item.title}
+        </Text>
+        <Text
+          style={[
+            styles.status,
+            item.status === "completed"
+              ? styles.statusCompleted
+              : styles.statusOngoing,
+          ]}
+        >
+          {item.status === "completed" ? "Hoàn thành" : "Đang tiến hành"}
+        </Text>
+        <Text style={styles.categories} numberOfLines={1}>
+          {item.categories.map((cat) => cat.name || cat).join(", ")}
+        </Text>
+      </View>
+    </TouchableOpacity>
   );
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container} keyboardShouldPersistTaps="handled">
       {/* Search Input */}
       <TextInput
-        placeholder="Tìm kiếm"
+        placeholder="Tìm kiếm manga..."
         placeholderTextColor="#aaa"
         value={search}
-        onChangeText={(text) => setSearch(text)}
+        onChangeText={setSearch}
+        onSubmitEditing={handleSubmitSearch}
         style={styles.searchInput}
+        returnKeyType="search"
       />
 
-      {/* Recent Keywords Section */}
+      {/* Recent Searches */}
       {keywords.length > 0 && (
         <View style={styles.section}>
           <View style={styles.headerRow}>
@@ -74,16 +133,25 @@ const SearchScreen = () => {
               <Text style={styles.clearAll}>Xóa tất cả</Text>
             </TouchableOpacity>
           </View>
-
           <ScrollView
             style={styles.keywordList}
-            nestedScrollEnabled={true}
-            contentContainerStyle={{ paddingBottom: 8 }}
+            nestedScrollEnabled
             showsVerticalScrollIndicator={false}
           >
             {keywords.map((keyword, index) => (
               <View key={index} style={styles.keywordRow}>
-                <Text style={styles.keywordText}>• {keyword}</Text>
+                <TouchableOpacity
+                  onPress={() => {
+                    setSearch(keyword);
+                    setFiltered(
+                      mangas.filter((m) =>
+                        m.title.toLowerCase().includes(keyword.toLowerCase())
+                      )
+                    );
+                  }}
+                >
+                  <Text style={styles.keywordText}>• {keyword}</Text>
+                </TouchableOpacity>
                 <TouchableOpacity onPress={() => removeKeyword(index)}>
                   <Text style={styles.removeButton}>✕</Text>
                 </TouchableOpacity>
@@ -93,17 +161,12 @@ const SearchScreen = () => {
         </View>
       )}
 
-      {/* Recent Manga */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Manga gần đây</Text>
-        <FlatList
-          data={recentManga}
-          keyExtractor={(item) => item.id}
-          renderItem={renderMangaItem}
-          scrollEnabled={false}
-        />
+      {/* Result Grid */}
+      <Text style={[styles.sectionTitle, { marginLeft: 12 }]}>Kết quả</Text>
+      <View style={styles.gridContainer}>
+        {filtered.map((manga, index) => renderItem({ item: manga, index }))}
       </View>
-    </View>
+    </ScrollView>
   );
 };
 
@@ -111,7 +174,7 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: "#000",
     flex: 1,
-    padding: 16,
+    paddingHorizontal: 12,
   },
   searchInput: {
     backgroundColor: "#1a1a1a",
@@ -120,7 +183,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     borderRadius: 20,
     fontSize: 16,
-    marginBottom: 16,
+    marginTop: 16,
   },
   section: {
     marginTop: 16,
@@ -140,7 +203,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   keywordList: {
-    maxHeight: 150, // tối đa ~4 dòng (tuỳ font)
+    maxHeight: 150,
     marginTop: 8,
   },
   keywordRow: {
@@ -162,19 +225,46 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginLeft: 8,
   },
-  mangaItem: {
-    paddingVertical: 12,
-    borderBottomColor: "#222",
-    borderBottomWidth: 1,
+  gridContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    marginTop: 12,
+    paddingBottom: 24,
   },
-  mangaTitle: {
+  gridItem: {
+    backgroundColor: "#1e1e1e",
+    marginBottom: 12,
+    borderRadius: 12,
+    overflow: "hidden",
+  },
+  gridImage: {
+    width: "100%",
+    height: ITEM_HEIGHT,
+    resizeMode: "cover",
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
+  },
+  gridInfo: {
+    padding: 8,
+  },
+  title: {
     color: "#fff",
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  mangaGenres: {
-    color: "#888",
     fontSize: 14,
+    fontWeight: "bold",
+  },
+  status: {
+    fontSize: 12,
+    marginTop: 4,
+  },
+  statusOngoing: {
+    color: "#4caf50",
+  },
+  statusCompleted: {
+    color: "#f44336",
+  },
+  categories: {
+    color: "#bbb",
+    fontSize: 12,
     marginTop: 2,
   },
 });

@@ -64,14 +64,7 @@ const MangaByCategory = () => {
       ]}
       onPress={() => router.push(`/mangas/${item._id}`)}
     >
-      <Image
-        source={{
-          uri: item.coverImage.startsWith("http")
-            ? item.coverImage
-            : `http://localhost:9999/${item.coverImage}`,
-        }}
-        style={styles.gridImage}
-      />
+      <Image style={styles.gridImage} />
       <View style={styles.gridInfo}>
         <Text style={styles.title} numberOfLines={1}>
           {item.title}
