@@ -9,25 +9,33 @@
       <th>Tiêu đề</th>
       <th>Tác giả</th>
       <th>Trạng thái</th>
+
       <th>Thể loại</th>
       <th>Hành động</th>
     </tr>
   </thead>
   <tbody>
     <% mangas.forEach(m => { %>
-      <tr>
-        <td><%= m.title %></td>
-        <td><%= m.author %></td>
-        <td><%= m.status %></td>
-        <td><%= m.categories.map(c => c.name).join(", ") %></td>
-        <td>
-          <a href="/mangas/<%= m._id %>" class="btn btn-sm btn-info">Chi tiết</a>
-          <a href="/mangas/<%= m._id %>/edit" class="btn btn-sm btn-warning">Sửa</a>
-          <form action="/mangas/<%= m._id %>?_method=DELETE" method="POST" style="display:inline;">
-            <button type="submit" class="btn btn-sm btn-danger">Xoá</button>
-          </form>
-        </td>
-      </tr>
+    <tr>
+      <td><%= m.title %></td>
+      <td><%= m.author %></td>
+      <td><%= m.status %></td>
+
+      <td><%= m.categories.map(c => c.name).join(", ") %></td>
+      <td>
+        <a href="/mangas/<%= m._id %>" class="btn btn-sm btn-info">Chi tiết</a>
+        <a href="/mangas/<%= m._id %>/edit" class="btn btn-sm btn-warning"
+          >Sửa</a
+        >
+        <form
+          action="/mangas/<%= m._id %>?_method=DELETE"
+          method="POST"
+          style="display: inline"
+        >
+          <button type="submit" class="btn btn-sm btn-danger">Xoá</button>
+        </form>
+      </td>
+    </tr>
     <% }) %>
   </tbody>
 </table>

@@ -38,6 +38,10 @@ export default function RootLayout() {
             name="/change-password"
             options={{ title: "Đổi Mật khẩu ở profile" }}
           />
+          <Stack.Screen
+            name="all_recent"
+            options={{ title: "Cập nhật gần đây" }}
+          />
         </Stack>
         <StatusBar style="auto" />
       </ThemeProvider>

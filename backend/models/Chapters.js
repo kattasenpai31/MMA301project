@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const ChapterSchema = new mongoose.Schema({
   manga: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Mangas",
+    ref: "Manga",
     required: true,
   },
   title: { type: String, required: true },

@@ -17,6 +17,10 @@
       <option value="completed" <%= manga?.status === 'completed' ? 'selected' : '' %>>Hoàn thành</option>
     </select>
   </div>
+  <div class="mb-3">
+    <label>Mô tả</label>
+    <textarea name="description" class="form-control" rows="4"><%= manga?.description || '' %></textarea>
+  </div>
  <div class="mb-3">
   <label>Thể loại</label><br />
  <% categories.forEach(cat => { %>

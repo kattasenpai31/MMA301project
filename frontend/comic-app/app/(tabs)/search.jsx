@@ -11,7 +11,7 @@ import {
   Keyboard,
 } from "react-native";
 import { useRouter } from "expo-router";
-
+import AsyncStorage from "@react-native-async-storage/async-storage";
 const windowWidth = Dimensions.get("window").width;
 let numColumns = 2;
 if (windowWidth >= 1200) numColumns = 5;
@@ -23,7 +23,7 @@ const horizontalPadding = 24;
 const ITEM_WIDTH =
   (windowWidth - horizontalPadding - (numColumns - 1) * ITEM_GAP) / numColumns;
 const ITEM_HEIGHT = ITEM_WIDTH * 1.4;
-
+const STORAGE_KEY = "recent_keywords";
 const SearchScreen = () => {
   const router = useRouter();
   const [search, setSearch] = useState("");
@@ -31,39 +31,56 @@ const SearchScreen = () => {
   const [mangas, setMangas] = useState([]);
   const [filtered, setFiltered] = useState([]);
 
+  // Load manga và keyword từ AsyncStorage
   useEffect(() => {
-    const fetchMangas = async () => {
+    const fetchData = async () => {
       try {
         const res = await fetch("http://localhost:9999/api/mangas");
         const data = await res.json();
         setMangas(data);
-        setFiltered(data); // mặc định hiện tất cả
-      } catch (error) {
-        console.error("Failed to fetch mangas:", error);
+        setFiltered(data);
+      } catch (err) {
+        console.error("Lỗi lấy manga:", err);
+      }
+
+      try {
+        const json = await AsyncStorage.getItem(STORAGE_KEY);
+        if (json) setKeywords(JSON.parse(json));
+      } catch (err) {
+        console.error("Lỗi lấy keyword từ AsyncStorage:", err);
       }
     };
-    fetchMangas();
+
+    fetchData();
   }, []);
 
+  // Lưu vào AsyncStorage khi thay đổi
+  const saveKeywords = async (newKeywords) => {
+    try {
+      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(newKeywords));
+    } catch (e) {
+      console.error("Lỗi khi lưu keywords:", e);
+    }
+  };
+
+  // Tìm kiếm khi nhấn Enter
   const handleSubmitSearch = () => {
     const trimmed = search.trim();
-
-    // Nếu chuỗi rỗng -> hiện tất cả
     if (!trimmed) {
       setFiltered(mangas);
       Keyboard.dismiss();
       return;
     }
 
-    // Lọc toàn bộ manga (không chỉ manga gần đây)
-    const filteredManga = mangas.filter((manga) =>
+    const results = mangas.filter((manga) =>
       manga.title.toLowerCase().includes(trimmed.toLowerCase())
     );
-
-    setFiltered(filteredManga);
+    setFiltered(results);
 
     if (!keywords.includes(trimmed)) {
-      setKeywords((prev) => [trimmed, ...prev.slice(0, 9)]);
+      const newKeywords = [trimmed, ...keywords.slice(0, 9)];
+      setKeywords(newKeywords);
+      saveKeywords(newKeywords);
     }
 
     Keyboard.dismiss();
@@ -73,9 +90,13 @@ const SearchScreen = () => {
     const newKeywords = [...keywords];
     newKeywords.splice(index, 1);
     setKeywords(newKeywords);
+    saveKeywords(newKeywords);
   };
 
-  const clearAll = () => setKeywords([]);
+  const clearAll = () => {
+    setKeywords([]);
+    saveKeywords([]);
+  };
 
   const renderItem = ({ item, index }) => (
     <TouchableOpacity

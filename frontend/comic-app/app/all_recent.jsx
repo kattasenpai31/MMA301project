@@ -9,7 +9,7 @@ import {
   ActivityIndicator,
   Dimensions,
 } from "react-native";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 
 const windowWidth = Dimensions.get("window").width;
 
@@ -28,30 +28,35 @@ const ITEM_WIDTH =
   (windowWidth - horizontalPadding - (numColumns - 1) * ITEM_GAP) / numColumns;
 const ITEM_HEIGHT = ITEM_WIDTH * 1.4;
 
-const MangaByCategory = () => {
-  const { id, name } = useLocalSearchParams();
-  const [mangas, setMangas] = useState([]);
+const AllRecentManga = () => {
+  const [recentMangas, setRecentMangas] = useState([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
-    const fetchMangasByCategory = async (categoryName) => {
+    const fetchRecentMangas = async () => {
       try {
-        const response = await fetch(
-          `http://localhost:9999/api/mangas/category/${id}`
-        );
+        const response = await fetch("http://localhost:9999/api/mangas");
         const data = await response.json();
-        console.log("Fetched mangas: ", data);
-        setMangas(data);
+
+        // Lọc manga được cập nhật trong 7 ngày gần đây
+        const oneWeekAgo = new Date();
+        oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+        const filtered = data.filter((manga) => {
+          const createdAt = new Date(manga.createdAt);
+          return createdAt >= oneWeekAgo;
+        });
+
+        setRecentMangas(filtered);
       } catch (error) {
-        console.error("Failed to fetch mangas:", error);
+        console.error("Lỗi khi lấy manga gần đây:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchMangasByCategory(id);
-  }, [id]);
+    fetchRecentMangas();
+  }, []);
 
   const renderItem = ({ item, index }) => (
     <TouchableOpacity
@@ -88,14 +93,14 @@ const MangaByCategory = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Thể loại: {name}</Text>
+      <Text style={styles.header}>Tất cả Manga cập nhật gần đây</Text>
       {loading ? (
         <ActivityIndicator size="large" color="#2196F3" />
-      ) : mangas.length === 0 ? (
-        <Text style={styles.noData}>Không có manga thuộc thể loại này.</Text>
+      ) : recentMangas.length === 0 ? (
+        <Text style={styles.noData}>Không có manga cập nhật gần đây.</Text>
       ) : (
         <FlatList
-          data={mangas}
+          data={recentMangas}
           keyExtractor={(item) => item._id}
           renderItem={renderItem}
           numColumns={2}
@@ -106,7 +111,7 @@ const MangaByCategory = () => {
   );
 };
 
-export default MangaByCategory;
+export default AllRecentManga;
 
 const styles = StyleSheet.create({
   container: {

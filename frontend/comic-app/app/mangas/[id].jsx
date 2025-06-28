@@ -7,16 +7,64 @@ import {
   TouchableOpacity,
   StyleSheet,
   Dimensions,
+  Alert,
+  Platform,
 } from "react-native";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { ArrowLeft, Star, Bookmark } from "lucide-react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const screenWidth = Dimensions.get("window").width;
 
 export default function MangaDetail() {
   const { id } = useLocalSearchParams();
   const [manga, setManga] = useState(null);
+  const [followed, setFollowed] = useState(false);
+  const handleFollow = async () => {
+    const token = await AsyncStorage.getItem("token");
+    if (!token) {
+      router.push("/login");
+      return;
+    }
+
+    if (!manga || !manga._id) return;
+
+    try {
+      if (followed) {
+        // BỎ THEO DÕI
+        await axios.delete("http://localhost:9999/api/follows", {
+          headers: { Authorization: `Bearer ${token}` },
+          data: { mangaId: manga._id },
+        });
+        setFollowed(false);
+        if (Platform.OS === "web") {
+          alert("Đã bỏ theo dõi.");
+        } else {
+          Alert.alert("Đã bỏ theo dõi", "Bạn đã huỷ theo dõi manga này.");
+        }
+      } else {
+        // THEO DÕI
+        await axios.post(
+          "http://localhost:9999/api/follows",
+          { mangaId: manga._id },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        setFollowed(true);
+        if (Platform.OS === "web") {
+          alert("Đã theo dõi thành công!");
+        } else {
+          Alert.alert("Thành công", "Bạn đã theo dõi manga này.");
+        }
+      }
+    } catch (err) {
+      console.error(
+        "Lỗi theo dõi/bỏ theo dõi:",
+        err.response?.data || err.message
+      );
+      Alert.alert("Lỗi", "Không thể cập nhật trạng thái theo dõi.");
+    }
+  };
 
   useEffect(() => {
     const fetchManga = async () => {
@@ -27,7 +75,26 @@ export default function MangaDetail() {
         console.error("Error fetching manga:", err.message);
       }
     };
+
+    const checkFollow = async () => {
+      const token = await AsyncStorage.getItem("token");
+      if (!token) return;
+
+      try {
+        const res = await axios.get(
+          `http://localhost:9999/api/follows/check/${id}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        setFollowed(res.data.followed);
+      } catch (err) {
+        console.error("Lỗi kiểm tra theo dõi:", err.message);
+      }
+    };
+
     fetchManga();
+    checkFollow(); // kiểm tra theo dõi
   }, [id]);
 
   if (!manga) return null;
@@ -82,8 +149,8 @@ export default function MangaDetail() {
 
       {/* Actions */}
       <View style={styles.actionRow}>
-        <TouchableOpacity style={styles.actionButton}>
-          <Bookmark color="#fff" size={18} />
+        <TouchableOpacity style={styles.actionButton} onPress={handleFollow}>
+          <Bookmark color={followed ? "#00bfff" : "#fff"} size={18} />
           <Text style={styles.actionText}>Theo dõi</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.actionButton}>

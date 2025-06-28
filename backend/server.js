@@ -8,6 +8,7 @@ const categoryRoutes = require("./routes/category.route");
 const userRoutes = require("./routes/user.route");
 const mangaRoutes = require("./routes/manga.route");
 const authRoutes = require("./routes/auth.route");
+const followRoutes = require("./routes/follow.route");
 
 const cors = require("cors");
 const app = express();
@@ -28,6 +29,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 // API Routes
+app.use("/api/follows", followRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/mangas", mangaRoutes);
