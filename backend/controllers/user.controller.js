@@ -109,6 +109,34 @@ const getProfile = async (req, res) => {
   }
 };
 
+const editProfile = async (req, res) => {
+  try {
+    const { loginName, email, fullName, phoneNumber } = req.body;
+    const userId = req.userId; // từ middleware đã gán
+
+    if (!loginName || !email) {
+      return res.status(400).json({ message: "Thiếu thông tin cần thiết" });
+    }
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "Không tìm thấy người dùng" });
+    }
+
+    user.loginName = loginName;
+    user.email = email;
+    user.fullName = fullName;
+    user.phoneNumber = phoneNumber;
+
+    await user.save();
+
+    return res.status(200).json({ message: "Chinh sửa thành cong" });
+  } catch (err) {
+    return res.status(500).json({ message: "Lỗi máy chủ", error: err.message });
+  }
+};
+
 const ChangePassword = async (req, res) => {
   try {
     const { currentPassword, newPassword } = req.body;
@@ -200,4 +228,5 @@ module.exports = {
   ChangePassword,
   uploadAvatar,
   forgotPassword,
+  editProfile,
 };

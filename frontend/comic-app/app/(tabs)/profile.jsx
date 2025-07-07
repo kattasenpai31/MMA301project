@@ -159,6 +159,13 @@ const ProfileScreen = () => {
         <>
           <TouchableOpacity
             style={styles.optionButton}
+            onPress={() => router.push("/edit-profile")}
+          >
+            <Ionicons name="create-outline" size={20} color="#2196F3" />
+            <Text style={styles.optionText}>Chỉnh sửa profile</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.optionButton}
             onPress={() => router.push("/change-password")}
           >
             <Ionicons name="lock-closed" size={20} color="#2196F3" />

@@ -23,6 +23,7 @@ UserRouter.post(
   upload.single("avatar"),
   UserController.uploadAvatar
 );
+UserRouter.put("/edit_profile", authenticateToken, UserController.editProfile);
 UserRouter.get("/profile", authenticateToken, UserController.getProfile);
 UserRouter.put(
   "/change_password",
