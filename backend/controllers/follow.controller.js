@@ -17,7 +17,11 @@ const followManga = async (req, res) => {
 };
 const getAllMangaFollows = async (req, res) => {
   try {
-    const follows = await Follow.find({ user: req.userId }).populate("manga");
+    const follows = await Follow.find({ user: req.userId }).populate({
+      path: "manga",
+      populate: { path: "categories", select: "name" },
+    });
+
     res.json(follows);
   } catch (err) {
     res.status(500).json({ message: err.message });
