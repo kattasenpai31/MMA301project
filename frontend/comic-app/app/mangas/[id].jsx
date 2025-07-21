@@ -21,6 +21,8 @@ export default function MangaDetail() {
   const { id } = useLocalSearchParams();
   const [manga, setManga] = useState(null);
   const [followed, setFollowed] = useState(false);
+  const [readingHistory, setReadingHistory] = useState(null);
+
   const handleFollow = async () => {
     const token = await AsyncStorage.getItem("token");
     if (!token) {
@@ -92,7 +94,23 @@ export default function MangaDetail() {
         console.error("Lỗi kiểm tra theo dõi:", err.message);
       }
     };
+    const fetchReadingHistory = async () => {
+      const token = await AsyncStorage.getItem("token");
+      if (!token) return;
 
+      try {
+        const res = await axios.get(
+          `http://localhost:9999/api/reading-history/user/${id}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        setReadingHistory(res.data);
+      } catch (err) {
+        console.error("Lỗi lấy lịch sử đọc:", err.message);
+      }
+    };
+    fetchReadingHistory();
     fetchManga();
     checkFollow(); // kiểm tra theo dõi
   }, [id]);
@@ -158,7 +176,28 @@ export default function MangaDetail() {
           <Text style={styles.actionText}>Đánh giá</Text>
         </TouchableOpacity>
       </View>
-
+      {readingHistory && (
+        <View
+          style={{
+            backgroundColor: "#1e1e1e",
+            marginHorizontal: 14,
+            padding: 12,
+            borderRadius: 10,
+            marginBottom: 8,
+          }}
+        >
+          <Text style={{ color: "#bbb", fontSize: 14 }}>
+            Bạn đã đọc đến{" "}
+            <Text style={{ color: "#00bfff", fontWeight: "600" }}>
+              Chapter {readingHistory.chapter?.number || "?"}
+            </Text>{" "}
+            vào ngày{" "}
+            <Text style={{ color: "#aaa" }}>
+              {new Date(readingHistory.lastReadAt).toLocaleDateString("vi-VN")}
+            </Text>
+          </Text>
+        </View>
+      )}
       {/* Comments + Rating (fake links) */}
       <TouchableOpacity style={styles.commentSection}>
         <Text style={{ color: "#fff" }}>1 bình luận</Text>

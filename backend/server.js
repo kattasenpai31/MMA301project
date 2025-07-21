@@ -39,7 +39,9 @@ app.use("/api/auth", authRoutes);
 const methodOverride = require("method-override");
 app.use(methodOverride("_method"));
 const mangaViewRoutes = require("./routes/admin/manga.view.route");
+const categoryViewRoutes = require("./routes/admin/category.view.route");
 app.use("/mangas", mangaViewRoutes);
+app.use("/categories", categoryViewRoutes);
 
 // Error handlers
 app.use((req, res) => {

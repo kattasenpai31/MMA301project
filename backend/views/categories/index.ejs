@@ -1,0 +1,38 @@
+<% layout ('../layouts/main') %>
+
+<h1>Danh sách thể loại</h1>
+
+<a href="/categories/new" class="btn btn-primary mb-3">+ Tạo mới thể loại</a>
+
+<table class="table table-bordered">
+  <thead>
+    <tr>
+      <th>STT</th>
+      <th>Tên thể loại</th>
+      <th>Hành động</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% categories.forEach((category, index) => { %>
+    <tr>
+      <td><%= index + 1 %></td>
+      <td><%= category.name %></td>
+      <td>
+        <a
+          href="/categories/<%= category._id %>/edit"
+          class="btn btn-warning btn-sm"
+          >Sửa</a
+        >
+        <form
+          action="/categories/<%= category._id %>?_method=DELETE"
+          method="POST"
+          style="display: inline-block"
+          onsubmit="return confirm('Bạn có chắc muốn xóa?')"
+        >
+          <button type="submit" class="btn btn-danger btn-sm">Xóa</button>
+        </form>
+      </td>
+    </tr>
+    <% }) %>
+  </tbody>
+</table>

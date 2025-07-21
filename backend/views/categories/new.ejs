@@ -1,0 +1,12 @@
+<% layout (../layouts/main) %>
+
+<h1>Tạo mới thể loại</h1>
+
+<form action="/categories" method="POST">
+  <div class="form-group mb-3">
+    <label for="name">Tên thể loại</label>
+    <input type="text" class="form-control" id="name" name="name" required />
+  </div>
+  <button type="submit" class="btn btn-success">Tạo mới</button>
+  <a href="/categories" class="btn btn-secondary">Hủy</a>
+</form>
