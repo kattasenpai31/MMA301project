@@ -198,11 +198,14 @@ export default function MangaDetail() {
           </Text>
         </View>
       )}
-      {/* Comments + Rating (fake links) */}
-      <TouchableOpacity style={styles.commentSection}>
-        <Text style={{ color: "#fff" }}>1 bình luận</Text>
+      <TouchableOpacity
+        style={styles.commentSection}
+        onPress={() =>
+          router.push({ pathname: "/comment", params: { mangaId: manga._id } })
+        }
+      >
+        <Text style={{ color: "#fff" }}>Comments</Text>
       </TouchableOpacity>
-
       {/* Chapter List */}
       <View style={styles.chapterSection}>
         <View style={styles.chapterHeader}>

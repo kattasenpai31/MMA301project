@@ -11,7 +11,7 @@ const MangaSchema = new mongoose.Schema({
     { type: mongoose.Schema.Types.ObjectId, ref: "Category", required: true },
   ],
   chapters: [{ type: mongoose.Schema.Types.ObjectId, ref: "Chapters" }],
-  comment: { type: mongoose.Schema.Types.ObjectId, ref: "Comments" },
+  comment: [{ type: mongoose.Schema.Types.ObjectId, ref: "Comments" }],
   coverImage: { type: String },
   createdAt: { type: Date, default: Date.now },
 });

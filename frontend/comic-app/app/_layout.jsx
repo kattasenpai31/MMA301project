@@ -42,6 +42,7 @@ export default function RootLayout() {
             name="all_recent"
             options={{ title: "Cập nhật gần đây" }}
           />
+          <Stack.Screen name="comment" options={{ title: "Bình luận" }} />
         </Stack>
         <StatusBar style="auto" />
       </ThemeProvider>
